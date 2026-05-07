@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f1117;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #fff;
+            border-bottom: 1px solid #2d3748;
+            padding-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: #1a1f2e;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .income { color: #48bb78; }
+        .expense { color: #fc8181; }
+        .balance { color: #63b3ed; }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #a0aec0;
+            margin-bottom: 0.4rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            background: #0f1117;
+            border: 1px solid #2d3748;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #63b3ed;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.7rem;
+            background: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background: #2b6cb0;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .filters input, .filters select {
+            flex: 1;
+        }
+
+        .filters button {
+            width: auto;
+            padding: 0.6rem 1.2rem;
+            margin-top: 0;
+            background: #2d3748;
+        }
+
+        .filters button:hover {
+            background: #4a5568;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.7rem 1rem;
+            background: #141820;
+            color: #a0aec0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #1e2535;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #1e2535;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-income {
+            background: #1c4532;
+            color: #48bb78;
+        }
+
+        .badge-expense {
+            background: #742a2a;
+            color: #fc8181;
+        }
+
+        .delete-btn {
+            width: auto;
+            padding: 0.3rem 0.7rem;
+            background: transparent;
+            border: 1px solid #4a5568;
+            color: #a0aec0;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-top: 0;
+        }
+
+        .delete-btn:hover {
+            background: #742a2a;
+            border-color: #742a2a;
+            color: #fc8181;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .category-item {
+            background: #141820;
+            border-radius: 6px;
+            padding: 0.7rem;
+            font-size: 0.85rem;
+        }
+
+        .category-item .name {
+            color: #a0aec0;
+            margin-bottom: 0.3rem;
+            text-transform: capitalize;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 2rem;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .error {
+            background: #742a2a;
+            color: #fc8181;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success {
+            background: #1c4532;
+            color: #48bb78;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Finance Tracker</h1>
+
+    <!-- Summary Cards -->
+    <div class="grid">
+        <div class="card">
+            <h2>Total Income</h2>
+            <div class="value income" id="totalIncome">€0.00</div>
+        </div>
+        <div class="card">
+            <h2>Total Expenses</h2>
+            <div class="value expense" id="totalExpenses">€0.00</div>
+        </div>
+        <div class="card">
+            <h2>Balance</h2>
+            <div class="value balance" id="balance">€0.00</div>
+        </div>
+    </div>
+
+    <div class="layout">
+        <!-- Add Transaction Form -->
+        <div>
+            <div class="card">
+                <h2>Add Transaction</h2>
+                <br>
+                <div class="error" id="formError"></div>
+                <div class="success" id="formSuccess"></div>
+                <div class="form-group">
+                    <label>Amount (€)</label>
+                    <input type="number" id="amount" placeholder="0.00" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="type">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="category" placeholder="e.g. salary, food, rent">
+                </div>
+                <div class="form-group">
+                    <label>Description (optional)</label>
+                    <input type="text" id="description" placeholder="e.g. Monthly salary">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="date">
+                </div>
+                <button onclick="addTransaction()">Add Transaction</button>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="card" style="margin-top: 1.5rem;">
+                <h2>By Category</h2>
+                <div class="category-grid" id="categoryGrid">
+                    <div class="empty">No data yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="card">
+            <h2>Transactions</h2>
+            <br>
+            <div class="filters">
+                <input type="text" id="filterCategory" placeholder="Category">
+                <select id="filterType">
+                    <option value="">All types</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <input type="month" id="filterMonth">
+                <button onclick="loadTransactions()">Filter</button>
+                <button onclick="clearFilters()">Clear</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsBody">
+                    <tr><td colspan="6" class="empty">No transactions yet</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+
+        // Set default date to today
+        document.getElementById('date').valueAsDate = new Date();
+
+        async function loadSummary() {
+            const month = document.getElementById('filterMonth').value;
+            const url = month ? `${API}/summary?month=${month}` : `${API}/summary`;
+            const res = await fetch(url);
+            const data = await res.json();
+
+            document.getElementById('totalIncome').textContent = `€${data.totalIncome.toFixed(2)}`;
+            document.getElementById('totalExpenses').textContent = `€${data.totalExpenses.toFixed(2)}`;
+            document.getElementById('balance').textContent = `€${data.balance.toFixed(2)}`;
+
+            const grid = document.getElementById('categoryGrid');
+            const categories = Object.entries(data.byCategory);
+
+            if (categories.length === 0) {
+                grid.innerHTML = '<div class="empty">No data yet</div>';
+                return;
+            }
+
+            grid.innerHTML = categories.map(([name, vals]) => `
+                <div class="category-item">
+                    <div class="name">${name}</div>
+                    ${vals.income > 0 ? `<div class="income">+€${vals.income.toFixed(2)}</div>` : ''}
+                    ${vals.expenses > 0 ? `<div class="expense">-€${vals.expenses.toFixed(2)}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function loadTransactions() {
+            const category = document.getElementById('filterCategory').value;
+            const type = document.getElementById('filterType').value;
+            const month = document.getElementById('filterMonth').value;
+
+            let url = `${API}/transactions?`;
+            if (category) url += `category=${category}&`;
+            if (type) url += `type=${type}&`;
+            if (month) url += `month=${month}&`;
+
+            const res = await fetch(url);
+            const transactions = await res.json();
+            const tbody = document.getElementById('transactionsBody');
+
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">No transactions found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = transactions.map(t => `
+                <tr>
+                    <td>${t.date}</td>
+                    <td style="text-transform: capitalize">${t.category}</td>
+                    <td style="color: #a0aec0">${t.description || '—'}</td>
+                    <td><span class="badge badge-${t.type}">${t.type}</span></td>
+                    <td class="${t.type === 'income' ? 'income' : 'expense'}">
+                        ${t.type === 'income' ? '+' : '-'}€${t.amount.toFixed(2)}
+                    </td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteTransaction('${t.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            loadSummary();
+        }
+
+        async function addTransaction() {
+            const amount = document.getElementById('amount').value;
+            const type = document.getElementById('type').value;
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value;
+            const date = document.getElementById('date').value;
+
+            const errorEl = document.getElementById('formError');
+            const successEl = document.getElementById('formSuccess');
+            errorEl.style.display = 'none';
+            successEl.style.display = 'none';
+
+            if (!amount || !category) {
+                errorEl.textContent = 'Amount and category are required';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            const res = await fetch(`${API}/transactions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, type, category, description, date })
+            });
+
+            if (res.ok) {
+                successEl.textContent = 'Transaction added successfully';
+                successEl.style.display = 'block';
+                document.getElementById('amount').value = '';
+                document.getElementById('category').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('date').valueAsDate = new Date();
+                loadTransactions();
+                setTimeout(() => successEl.style.display = 'none', 3000);
+            } else {
+                const err = await res.json();
+                errorEl.textContent = err.error;
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function deleteTransaction(id) {
+            await fetch(`${API}/transactions/${id}`, { method: 'DELETE' });
+            loadTransactions();
+        }
+
+        function clearFilters() {
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterMonth').value = '';
+            loadTransactions();
+        }
+
+        // Initial load
+        loadTransactions();
+        loadSummary();
+    </script>
+</body>
+</html>
